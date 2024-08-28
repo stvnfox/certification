@@ -1,12 +1,27 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { computed, ref, reactive } from "vue";
 import { movies } from "./helpers/movies.ts";
 
 const moviesList = ref(movies);
+const totalMovieAmount = computed(() => moviesList.value.length);
 
 const setRating = (movieIndex: number, rating: number) => {
   moviesList.value[movieIndex].rating = rating;
 };
+
+const resetMovieRatings = () => {
+  moviesList.value.forEach((movie) => {
+    movie.rating = 0;
+  });
+};
+
+const averageRatingValue = computed(() => {
+  const totalRating = moviesList.value.reduce((acc, movie) => {
+    return acc + (movie.rating ?? 0);
+  }, 0);
+
+  return (totalRating / totalMovieAmount.value).toFixed(1);
+});
 
 const showAddForm = ref(false);
 const toggleAddForm = () => {
@@ -58,101 +73,21 @@ const addMovie = () => {
     class="min-w-screen min-h-screen flex flex-col bg-gray-900 justify-center items-center"
   >
     <section class="flex flex-col container mx-auto">
-      <div class="self-end">
-        <button
-          class="self-end bg-purple-600 border-2 border-purple-600 hover:bg-white text-white hover:text-purple-600 rounded-lg transition-colors px-4 py-2 my-6"
-          @click="toggleAddForm"
-        >
-          Add movie
-        </button>
-        <section
-          v-if="showAddForm"
-          class="fixed inset-0 bg-black/60 flex justify-center items-center z-10"
-        >
-          <div class="md:w-[600px] p-6 bg-gray-900 text-white rounded-lg">
-            <h2 class="text-2xl font-semibold">Add movie</h2>
-            <form @submit.prevent="addMovie">
-              <fieldset>
-                <label for="name" class="block mt-4 text-sm">Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  v-model="form.name"
-                  required
-                  class="w-full bg-gray-800 text-white p-2 rounded-lg"
-                />
-                <p
-                  v-if="!form.name && form.submitted"
-                  class="text-red-500 text-sm"
-                >
-                  Name is required
-                </p>
-              </fieldset>
-              <fieldset>
-                <label for="description" class="block mt-4 text-sm"
-                  >Description</label
-                >
-                <textarea
-                  id="description"
-                  v-model="form.description"
-                  class="w-full bg-gray-800 text-white p-2 rounded-lg"
-                ></textarea>
-              </fieldset>
-              <fieldset>
-                <label for="image" class="block mt-4 text-sm">Image</label>
-                <input
-                  type="text"
-                  id="image"
-                  v-model="form.image"
-                  class="w-full bg-gray-800 text-white p-2 rounded-lg"
-                />
-              </fieldset>
-              <fieldset>
-                <label for="genres" class="block mt-4 text-sm">Genres</label>
-                <select
-                  v-model="form.genres"
-                  multiple
-                  required
-                  class="w-full bg-gray-800 text-white p-2 rounded-lg"
-                >
-                  <option>Drama</option>
-                  <option>Action</option>
-                  <option>Crime</option>
-                  <option>Comedy</option>
-                </select>
-                <p
-                  v-if="!form.genres.length && form.submitted"
-                  class="text-red-500 text-sm"
-                >
-                  Genre is required
-                </p>
-              </fieldset>
-              <fieldset class="flex items-center mt-3">
-                <input
-                  type="checkbox"
-                  id="in-theatres"
-                  v-model="form.inTheatres"
-                  class="mr-2 w-5 h-5 accent-purple-600"
-                />
-                <label for="in-theatres">In theatres</label>
-              </fieldset>
-            </form>
-            <div class="flex justify-between items-center mt-6">
-              <button
-                class="bg-red-500 border-2 border-red-500 hover:bg-white text-white hover:text-red-500 rounded-lg transition-colors px-4 py-1"
-                @click="toggleAddForm"
-              >
-                Cancel
-              </button>
-              <button
-                class="bg-purple-600 border-2 border-purple-600 hover:bg-white text-white hover:text-purple-600 rounded-lg transition-colors px-4 py-1"
-                @click="addMovie"
-              >
-                Add movie
-              </button>
-            </div>
-          </div>
-        </section>
+      <div class="flex justify-between items-center">
+        <div class="text-white">
+          <span>Total movies: {{ totalMovieAmount }}</span> | <span>Average rating: {{ averageRatingValue }}</span>
+        </div>
+        <div class="flex gap-4">
+          <button class="bg-white border-2 border-purple-600 hover:bg-purple-600 hover:text-white text-purple-600 rounded-lg transition-colors px-4 py-2 my-6" @click="resetMovieRatings">
+            Reset movie ratings
+          </button>
+          <button
+            class="bg-purple-600 border-2 border-purple-600 hover:bg-white text-white hover:text-purple-600 rounded-lg transition-colors px-4 py-2 my-6"
+            @click="toggleAddForm"
+          >
+            Add movie
+          </button>
+        </div>
       </div>
       <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <li
