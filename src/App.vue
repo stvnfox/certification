@@ -55,13 +55,13 @@ const setRating = (movie: any, rating: number) => {
             </ul>
             <p class="flex-grow mb-6">{{ movie.description }}</p>
             <div class="flex">
-              Rating: ({{ movie.rating }}/5)
+              Rating: ({{ movie.rating ?? '0' }}/5)
               <ul class="flex items-center gap-1 ml-2">
-                <li v-for="(star, ind) in 5" :key="`rating-${ind}`">
+                <li v-for="star in 5" :key="`rating-${ind}`">
                   <button
-                    :class="ind < movie.rating ? 'text-yellow-500' : 'text-gray-500'"
-                    :disabled="movie.rating === ind + 1"
-                    @click="setRating(movie, ind + 1)"
+                    :class="star <= movie.rating ? 'text-yellow-500' : 'text-gray-500'"
+                    :disabled="movie.rating === star"
+                    @click="setRating(movie, star)"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
