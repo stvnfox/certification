@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { ref } from "vue";
 import { movies } from "./helpers/movies.ts";
 
-const moviesList = reactive(movies);
+const moviesList = ref(movies);
 
-const setRating = (movie: any, rating: number) => {
-  movie.rating = rating;
+const setRating = (movieIndex: number, rating: number) => {
+  moviesList.value[movieIndex].rating = rating
 };
 </script>
 
@@ -16,7 +16,7 @@ const setRating = (movie: any, rating: number) => {
     <section class="container mx-auto">
       <ul class="grid grid-cols-3 gap-6">
         <li
-          v-for="movie in moviesList"
+          v-for="(movie, movieIndex) in moviesList"
           :key="movie.id"
           class="relative flex flex-col bg-white rounded-md"
         >
@@ -57,11 +57,11 @@ const setRating = (movie: any, rating: number) => {
             <div class="flex">
               Rating: ({{ movie.rating ?? '0' }}/5)
               <ul class="flex items-center gap-1 ml-2">
-                <li v-for="star in 5" :key="`rating-${ind}`">
+                <li v-for="star in 5" :key="`rating-${star}`">
                   <button
                     :class="star <= movie.rating ? 'text-yellow-500' : 'text-gray-500'"
                     :disabled="movie.rating === star"
-                    @click="setRating(movie, star)"
+                    @click="setRating(movieIndex, star)"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
